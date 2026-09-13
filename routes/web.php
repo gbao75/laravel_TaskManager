@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,3 +24,13 @@ Route::get('/dashboard', function () {
 })
     ->middleware('auth')
     ->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::resource('projects',ProjectController::class);
+    Route::resource('tasks',TaskController::class);
+    Route::patch(
+        '/tasks/{task}/status',
+        [TaskController::class, 'updateStatus']
+    )->name('tasks.updateStatus');
+});
+

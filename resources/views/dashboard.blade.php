@@ -19,6 +19,16 @@
         Email: {{ Auth::user()->email }}
     </p>
 
+    <a href="{{ route('projects.index') }}">
+    My Projects 
+    </a>
+
+    <br>
+
+    <a href="{{ route('tasks.index') }}">
+        Tasks
+    </a>
+
     <form action="{{ route('logout') }}" method="POST">
         @csrf
 
