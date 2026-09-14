@@ -7,7 +7,9 @@ use App\Http\Controllers\TaskController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
 });
 
 Route::get('/login', [AuthController::class, 'loginForm'])
@@ -26,8 +28,8 @@ Route::get('/dashboard', function () {
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::resource('projects',ProjectController::class);
-    Route::resource('tasks',TaskController::class);
+    Route::resource('projects',ProjectController::class)->except(['show']);
+    Route::resource('tasks',TaskController::class)->except(['show']);
     Route::patch(
         '/tasks/{task}/status',
         [TaskController::class, 'updateStatus']
