@@ -1,132 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>Edit Task</title>
-</head>
+@section('title', 'Edit Task - Task Manager')
 
-<body>
-
-    <h1>Edit Task</h1>
+@section('content')
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Edit Task</h1>
+            <p>Update task information and assignment.</p>
+        </div>
+        <a class="btn btn-secondary" href="{{ route('tasks.index') }}">← Back</a>
+    </div>
 
     @if ($errors->any())
-        <div>
-            @foreach ($errors->all() as $error)
-                <p style="color: red;">
-                    {{ $error }}
-                </p>
-            @endforeach
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    <form
-        action="{{ route('tasks.update', $task) }}"
-        method="POST"
-    >
+    <section class="card form-card">
+        <form action="{{ route('tasks.update', $task) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        @csrf
-        @method('PUT')
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="project_id">Project</label>
+                    <select id="project_id" name="project_id">
+                        @foreach ($projects as $project)
+                            <option value="{{ $project->id }}" @selected(old('project_id', $task->project_id) == $project->id)>{{ $project->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <div>
-            <label>Project</label>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="pending" @selected(old('status', $task->status) === 'pending')>Pending</option>
+                        <option value="in_progress" @selected(old('status', $task->status) === 'in_progress')>In Progress</option>
+                        <option value="completed" @selected(old('status', $task->status) === 'completed')>Completed</option>
+                    </select>
+                </div>
 
-            <select name="project_id">
+                <div class="form-group full">
+                    <label for="title">Title</label>
+                    <input id="title" type="text" name="title" value="{{ old('title', $task->title) }}">
+                </div>
 
-                @foreach ($projects as $project)
+                <div class="form-group full">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description">{{ old('description', $task->description) }}</textarea>
+                </div>
 
-                    <option
-                        value="{{ $project->id }}"
-                        @selected(
-                            old('project_id', $task->project_id)
-                            == $project->id
-                        )
-                    >
-                        {{ $project->name }}
-                    </option>
+                <div class="form-group">
+                    <label for="deadline">Deadline</label>
+                    <input id="deadline" type="date" name="deadline" value="{{ old('deadline', $task->deadline) }}">
+                </div>
+            </div>
 
-                @endforeach
-
-            </select>
-        </div>
-
-        <br>
-
-        <div>
-            <label>Title</label>
-
-            <input
-                type="text"
-                name="title"
-                value="{{ old('title', $task->title) }}"
-            >
-        </div>
-
-        <br>
-
-        <div>
-            <label>Description</label>
-
-            <textarea name="description">{{ old('description', $task->description) }}</textarea>
-        </div>
-
-        <br>
-
-        <div>
-            <label>Status</label>
-
-            <select name="status">
-
-                <option
-                    value="pending"
-                    @selected(
-                        old('status', $task->status) === 'pending'
-                    )
-                >
-                    Pending
-                </option>
-
-                <option
-                    value="in_progress"
-                    @selected(
-                        old('status', $task->status) === 'in_progress'
-                    )
-                >
-                    In Progress
-                </option>
-
-                <option
-                    value="completed"
-                    @selected(
-                        old('status', $task->status) === 'completed'
-                    )
-                >
-                    Completed
-                </option>
-
-            </select>
-        </div>
-
-        <br>
-
-        <div>
-            <label>Deadline</label>
-
-            <input
-                type="date"
-                name="deadline"
-                value="{{ old('deadline', $task->deadline) }}"
-            >
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Update Task
-        </button>
-
-    </form>
-
-</body>
-</html>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Update Task</button>
+                <a class="btn btn-secondary" href="{{ route('tasks.index') }}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+@endsection

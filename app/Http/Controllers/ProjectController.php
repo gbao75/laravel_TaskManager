@@ -7,9 +7,24 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $projects = auth()->user()->projects()->latest()->get();
+        $query = auth()->user()
+            ->projects()
+            ->withCount('tasks');
+
+        if ($request->filled('search')) {
+            $query->where(
+                'name',
+                'like',
+                '%' . $request->search . '%'
+            );
+        }
+
+        $projects = $query
+            ->latest()
+            ->paginate(6)
+            ->withQueryString();
 
         return view('projects.index', compact('projects'));
     }

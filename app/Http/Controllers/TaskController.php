@@ -3,50 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use App\Models\Project;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     public function index(Request $request)
-{
-    $query = auth()->user()
-        ->tasks()
-        ->with('project');
+    {
+        $query = auth()->user()
+            ->tasks()
+            ->with('project');
 
-    if ($request->filled('search')) {
-        $query->where('title', 'like', '%' . $request->search . '%');
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+
+        if ($request->sort === 'deadline_asc') {
+            $query->orderBy('deadline', 'asc');
+        } elseif ($request->sort === 'deadline_desc') {
+            $query->orderBy('deadline', 'desc');
+        } elseif ($request->sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+
+        $tasks = $query
+            ->paginate(4)
+            ->withQueryString();
+
+        $projects = auth()->user()
+            ->projects()
+            ->orderBy('name')
+            ->get();
+
+        return view('tasks.index', compact('tasks', 'projects'));
     }
-
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
-    }
-
-    if ($request->filled('project_id')) {
-        $query->where('project_id', $request->project_id);
-    }
-
-    if ($request->sort === 'deadline_asc') {
-        $query->orderBy('deadline', 'asc');
-    } elseif ($request->sort === 'deadline_desc') {
-        $query->orderBy('deadline', 'desc');
-    } elseif ($request->sort === 'oldest') {
-        $query->oldest();
-    } else {
-        $query->latest();
-    }
-
-    $tasks = $query
-        ->paginate(2)
-        ->withQueryString();
-
-    $projects = auth()->user()
-        ->projects()
-        ->orderBy('name')
-        ->get();
-
-    return view('tasks.index', compact('tasks', 'projects'));
-}
 
     public function create()
     {
@@ -136,16 +135,13 @@ class TaskController extends Controller
             ->route('tasks.index')
             ->with('success', 'Task deleted successfully.');
     }
-    
-    public function updateStatus(Request $request, Task $task) 
+
+    public function updateStatus(Request $request, Task $task)
     {
         $this->checkOwner($task);
 
         $validated = $request->validate([
-            'status' => [
-                        'required',
-                        'in:pending,in_progress,completed',
-            ],
+            'status' => ['required', 'in:pending,in_progress,completed'],
         ]);
 
         $task->update([

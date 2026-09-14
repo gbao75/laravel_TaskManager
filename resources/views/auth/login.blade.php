@@ -1,58 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>Login - Task Manager</title>
-</head>
+@section('title', 'Login - Task Manager')
 
-<body>
+@section('content')
+<div class="auth-shell">
+    <section class="card auth-card">
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in to manage your projects and tasks.</p>
 
-    <h1>Login</h1>
+        @if ($errors->any())
+            <div class="alert alert-danger" style="margin-top: 20px;">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    @if ($errors->any())
-        <div>
-            @foreach ($errors->all() as $error)
-                <p style="color: red;">
-                    {{ $error }}
-                </p>
-            @endforeach
-        </div>
-    @endif
+        <form action="{{ route('login.submit') }}" method="POST">
+            @csrf
 
-    <form action="{{ route('login.submit') }}" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" autocomplete="email" autofocus>
+            </div>
 
-        @csrf
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" type="password" name="password" autocomplete="current-password">
+            </div>
 
-        <div>
-            <label>Email</label>
-
-            <input
-                type="email"
-                name="email"
-                value="{{ old('email') }}"
-            >
-        </div>
-
-        <br>
-
-        <div>
-            <label>Password</label>
-
-            <input
-                type="password"
-                name="password"
-            >
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Login
-        </button>
-
-    </form>
-
-</body>
-</html>
+            <button class="btn btn-primary" type="submit">Login</button>
+        </form>
+    </section>
+</div>
+@endsection

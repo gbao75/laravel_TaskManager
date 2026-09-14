@@ -1,61 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>Edit Project</title>
-</head>
+@section('title', 'Edit Project - Task Manager')
 
-<body>
-
-    <h1>Edit Project</h1>
+@section('content')
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Edit Project</h1>
+            <p>Update project information.</p>
+        </div>
+        <a class="btn btn-secondary" href="{{ route('projects.index') }}">← Back</a>
+    </div>
 
     @if ($errors->any())
-        <div>
-            @foreach ($errors->all() as $error)
-                <p style="color: red;">
-                    {{ $error }}
-                </p>
-            @endforeach
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    <form
-        action="{{ route('projects.update', $project) }}"
-        method="POST"
-    >
+    <section class="card form-card">
+        <form action="{{ route('projects.update', $project) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        @csrf
-        @method('PUT')
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label for="name">Name</label>
+                    <input id="name" type="text" name="name" value="{{ old('name', $project->name) }}">
+                </div>
 
-        <div>
-            <label>Name</label>
+                <div class="form-group full">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description">{{ old('description', $project->description) }}</textarea>
+                </div>
+            </div>
 
-            <input
-                type="text"
-                name="name"
-                value="{{ old('name', $project->name) }}"
-            >
-        </div>
-
-        <br>
-
-        <div>
-            <label>Description</label>
-
-            <textarea
-                name="description"
-            >{{ old('description', $project->description) }}</textarea>
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Update
-        </button>
-
-    </form>
-
-</body>
-</html>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Update Project</button>
+                <a class="btn btn-secondary" href="{{ route('projects.index') }}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+@endsection

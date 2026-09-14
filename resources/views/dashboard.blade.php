@@ -1,41 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>Dashboard - Task Manager</title>
-</head>
+@section('title', 'Dashboard - Task Manager')
 
-<body>
+@section('content')
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Welcome back, {{ auth()->user()->name }}. Continue managing your work.</p>
+        </div>
+    </div>
 
-    <h1>Dashboard</h1>
+    <section class="dashboard-grid">
+        <article class="card dashboard-card">
+            <span class="small-muted">PROJECTS</span>
+            <div class="number">{{ auth()->user()->projects()->count() }}</div>
+            <p>Create, edit and organize the projects that belong to your account.</p>
+            <a class="btn btn-primary" href="{{ route('projects.index') }}">View Projects</a>
+        </article>
 
-    <p>
-        Welcome, {{ Auth::user()->name }}
-    </p>
-
-    <p>
-        Email: {{ Auth::user()->email }}
-    </p>
-
-    <a href="{{ route('projects.index') }}">
-    My Projects 
-    </a>
-
-    <br>
-
-    <a href="{{ route('tasks.index') }}">
-        Tasks
-    </a>
-
-    <form action="{{ route('logout') }}" method="POST">
-        @csrf
-
-        <button type="submit">
-            Logout
-        </button>
-    </form>
-
-</body>
-</html>
+        <article class="card dashboard-card">
+            <span class="small-muted">TASKS</span>
+            <div class="number">{{ auth()->user()->tasks()->count() }}</div>
+            <p>Search, filter, sort and update task status without reloading the page.</p>
+            <a class="btn btn-primary" href="{{ route('tasks.index') }}">View Tasks</a>
+        </article>
+    </section>
+</main>
+@endsection
